@@ -135,5 +135,21 @@ module.exports = {
             }), 
             totalPosts: totalPosts 
         };
+    },
+    post: async function({ postId }, req) {
+        if (!req.isAuth) {
+            const error = new Error('Not authenticated!');
+            error.code = 401;
+            throw error;
+        }
+        const post = await Post.findById(postId);
+        const user = await User.findById(req.userId);
+        return {
+            ...post._doc,
+            _id: post._id.toString(),
+            creator: user,
+            createdAt: post.createdAt.toISOString(),
+            updatedAt: post.updatedAt.toISOString()
+        };
     }
 };
